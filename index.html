@@ -26,6 +26,7 @@
     $(document).ready(function(){
       var container = $('.ledstrip')[0];
       strip = LEDstrip(container, 1);
+	  var numleds = null;
       led = {
 		push: function(r, g, b) {
 			strip.pushrgb([r,g,b]);
@@ -34,10 +35,26 @@
 			strip.latch();
 		},
 		setsize: function(newsize) {
+			numleds = newsize;
 			strip.setsize.bind(strip)(newsize);
 		},
 		debug: function(a) {
-			console.log(a)
+			console.log(a);
+			var debugcontainer = $("<div>&nbsp;</div>")[0];
+			$("#debugcontainer").append(debugcontainer);
+			var debugstrip = LEDstrip(debugcontainer, numleds);
+			for(var i=1;i<=numleds;i++) {
+				var c = a.get(i);
+				if(typeof c == 'undefined') {
+					r = g = b = 0;
+				} else {
+					r = c.get(1);
+					g = c.get(2);
+					b = c.get(3);
+				}
+				debugstrip.pushrgb([r,g,b]);
+			}
+			debugstrip.latch();
 		}
 	}
 	
@@ -84,8 +101,10 @@ startled(frame)
 -- stopled()
 	</textarea>
 		<p>
-		<button onclick="executeLua(myCodeMirror.getValue(), true); return false" id="the_button">Execute</button>
+		<button onclick="executeLua(myCodeMirror.getValue(), true); return false" id="execute">Execute</button>
+		<button onclick="led.stopled()" id="stop">Stop</button>
 	     <h4>output</h4>
+		 <div id="debugcontainer"></div>
 	     <pre id="output"></pre>
 		</p>
 	</p>
@@ -125,6 +144,7 @@ startled(frame)
 			function stopled()
 				window:clearInterval(js.global.led.interval)
 			end
+			js.global.led.stopled = stopled
 			function startled(framegen)
 				delay = 1000/framerate
 				stopled()
