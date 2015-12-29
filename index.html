@@ -1,0 +1,159 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="ledstrip.css" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="rAF.js"></script>
+    <script type="text/javascript" src="ledstrip.js"></script>
+    <script type="text/javascript" src="ws2812.js"></script>
+    <script type="text/javascript" src="arduino_funcs.js"></script>
+    <script type="text/javascript" src="color_wave.js"></script>
+    <script type="text/javascript" src="water_torture.js"></script>
+    <script type="text/javascript" src="chasers.js"></script>
+    <script type="text/javascript" src="larson.js"></script>
+    <script type="text/javascript" src="bouncingballs.js"></script>
+    <script type="text/javascript" src="lightning.js"></script>
+    <script type="text/javascript" src="twinklesparkle.js"></script>
+    <script type="text/javascript" src="fire.js"></script>
+    <script type="text/javascript" src="eyeblink.js"></script>
+	<script src="codemirror.js"></script>
+	<link rel="stylesheet" href="codemirror.css">
+	<script src="lua.js"></script>
+    <script type="text/javascript">
+    var strip; // need to be global
+
+	var led = null
+
+    $(document).ready(function(){
+      var container = $('.ledstrip')[0];
+      strip = LEDstrip(container, 1);
+      led = {
+		push: function(r, g, b) {
+			strip.pushrgb([r,g,b]);
+		},
+		latch: function() {
+			strip.latch();
+		},
+		setsize: function(newsize) {
+			strip.setsize.bind(strip)(newsize);
+		}
+	}
+	
+
+      $('#diffuser').change(function(e) {
+        $('.ledstrip').toggleClass('diffuse');
+      });
+
+    });
+    </script>
+</head>
+<body>
+       <header>
+         <h1>LED Strip Simulator</h1>
+       </header>
+       <article>
+         <div class="ledstrip"></div>
+         <br />
+         <form>
+           <input type="checkbox" id="diffuser" value="0" /> <label for="diffuser">Diffuser</label>
+         </form>
+<br/>
+	<p>
+    <textarea id="mytext">
+-- This is lua!
+print("this will go to console")
+setstripsize(30)
+cnt = 0
+function frame ()
+	cnt = cnt + 1
+	val = (255 + cnt*5) % 255
+	frame = { {val, 0, 0}, {0, val, 0}, {0, 0, val} }
+	return frame
+end
+startled(frame)
+	</textarea>
+		<p>
+		<button onclick="executeLua(myCodeMirror.getValue(), true); return false" id="the_button">Execute</button>
+	     <h4>output</h4>
+	     <pre id="output"></pre>
+		</p>
+	</p>
+    </article>
+
+		<script type="text/lua">
+			-- frame rate in ms
+			framerate = 10
+			function pushledjs (a)
+				j = #a
+				if(j > numleds) then
+					js.global.console:log('too many values in frame for # leds')
+				else
+					for i=1, j do
+				  		js.global.led:push(a[i][1], a[i][2], a[i][3])
+			    	end
+					js.global.led:latch()
+				end
+		    end
+			function bytestostring(bytes)
+			  s = {}
+			  cnt = 1
+			  for i = 1, #bytes do
+			  	for j = 1, 3 do
+			      s[cnt] = string.char(bytes[i][j])
+				  cnt = cnt +1
+			    end
+			  end
+			  return table.concat(s)
+			end
+			function pushlednative (a)
+				ws2812.writergb(4, bytestostring(a))
+			end
+--			pushled = pushlednative
+			pushled = pushledjs
+			cnt = 0
+			function stopled()
+				window:clearInterval(js.global.led.interval)
+			end
+			function startled(framegen, frameratenew)
+				stopled()
+				js.global.led.interval = window:setInterval(function() pushled(framegen()) end, framerate)
+			end
+			function setstripsize(newsize)
+				numleds = newsize
+				js.global.led:setsize(newsize)
+			end
+			function getstripsize()
+				return numleds
+			end
+		</script>
+		
+		<script>
+		// CodeMirror
+		var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('mytext'));
+		//myCodeMirror.setSize(screen.width*0.6, screen.height*0.2);
+
+		// Execution
+		var outputElement = document.getElementById('output')
+		var Module = {
+		  print: function(x) {
+		    outputElement.textContent = (outputElement.textContent ? outputElement.textContent + '\n' : '') + x;
+		  }
+		};
+
+		function executeLua(code, clear) {
+		  if (clear) {
+		    outputElement.style.color = null;
+		    outputElement.textContent = '';
+		  }
+		  try {
+		    L.execute(code);
+		  } catch(e) {
+		    outputElement.style.color = "red";
+		    outputElement.textContent = e.toString();
+		  }
+		}
+		</script>
+		<script src="lua.vm.js"></script>
+		
+
+     </body>
+     </html>
