@@ -35,6 +35,9 @@
 		},
 		setsize: function(newsize) {
 			strip.setsize.bind(strip)(newsize);
+		},
+		debug: function(a) {
+			console.log(a)
 		}
 	}
 	
@@ -61,15 +64,24 @@
     <textarea id="mytext">
 -- This is lua!
 print("this will go to console")
+-- number of LEDs
 setstripsize(30)
+-- fps
+setframerate(100)
+-- define frames
 cnt = 0
 function frame ()
 	cnt = cnt + 1
 	val = (255 + cnt*5) % 255
 	frame = { {val, 0, 0}, {0, val, 0}, {0, 0, val} }
+	-- use debug output
+	debugframe(frame)
+	-- don't forget to return frame
 	return frame
 end
+-- start animation
 startled(frame)
+-- stopled()
 	</textarea>
 		<p>
 		<button onclick="executeLua(myCodeMirror.getValue(), true); return false" id="the_button">Execute</button>
@@ -80,8 +92,8 @@ startled(frame)
     </article>
 
 		<script type="text/lua">
-			-- frame rate in ms
-			framerate = 10
+			-- frame rate (fps)
+			framerate = 30
 			function pushledjs (a)
 				j = #a
 				if(j > numleds) then
@@ -113,9 +125,10 @@ startled(frame)
 			function stopled()
 				window:clearInterval(js.global.led.interval)
 			end
-			function startled(framegen, frameratenew)
+			function startled(framegen)
+				delay = 1000/framerate
 				stopled()
-				js.global.led.interval = window:setInterval(function() pushled(framegen()) end, framerate)
+				js.global.led.interval = window:setInterval(function() pushled(framegen()) end, delay)
 			end
 			function setstripsize(newsize)
 				numleds = newsize
@@ -124,6 +137,14 @@ startled(frame)
 			function getstripsize()
 				return numleds
 			end
+			-- needs to be set before startled
+			function setframerate(newframerate)
+				framerate = newframerate
+			end
+			function debugframe(frame)
+				js.global.led:debug(frame)
+			end
+				
 		</script>
 		
 		<script>
