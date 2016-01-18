@@ -3,11 +3,6 @@ body {
   color: #eee;
 }
 
-br { 
-  content: " ";
-  clear: both; 
-}
-
 form {
   display: block;
   margin: 1em;
@@ -26,30 +21,17 @@ li {
 }
 
 .ledstrip {
-  display: block;
-/*  float: left; */
-  height: 16px;
-  border: 1px solid #888;
-  background-color: #444;
-  clear: right;
+  /*border: 1px solid #888;
+  background-color: #444;*/
   margin: 1em 1em;
-}
-
-.ledstrip.ring .WS2812-led {
-  position: absolute;
-}
-
-.ledstrip:after {
-  float: none;
-  display: block;
-  clear: both;
+  width: 100%;
 }
 
 .ledlight, .WS2812-led {
-    display: block;
-    width: 10px;
-    height: 10px;
-    float: left;
+    display: inline-block;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
     border: 1px solid #666;
     background-color: #000;
     margin: 2px;
