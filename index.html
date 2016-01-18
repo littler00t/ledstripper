@@ -15,9 +15,9 @@ $(document).ready(function(){
     var container = $('.ledstrip')[0];
 
     // create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0xFFFFFF, true);
+    var stage = new PIXI.Stage(0xFFFFFF, true);
 
-	stage.setInteractive(false);
+    stage.setInteractive(false);
 
     var rwidth = 16;
     var rheight = 16;
@@ -29,112 +29,112 @@ $(document).ready(function(){
 
     var numitems = 30;
 
-	var canvasWidth = null;
-	var canvasHeight = null;
-	var renderer = null;
+    var canvasWidth = null;
+    var canvasHeight = null;
+    var renderer = null;
 
-	function initCanvas() {
-		console.log("initCanvas", numitems, numperrow, renderer == null);
-		
-	    canvasWidth = ((numperrow+1)*(rwidth+rmarginx));
-	    canvasHeight = (Math.floor(numitems / numperrow)+1)*(rheight+rmarginy)+rmarginy*2;
+    function initCanvas() {
+        console.log("initCanvas", numitems, numperrow, renderer == null);
+        
+        canvasWidth = ((numperrow+1)*(rwidth+rmarginx));
+        canvasHeight = (Math.floor(numitems / numperrow)+1)*(rheight+rmarginy)+rmarginy*2;
 
-		if(renderer == null) {
-			renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
-		} else {
-			renderer.resize(canvasWidth, canvasHeight);
-		}
+        if(renderer == null) {
+            renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
+        } else {
+            renderer.resize(canvasWidth, canvasHeight);
+        }
 
-		renderer.view.style.width = canvasWidth + "px";
-		renderer.view.style.height = canvasHeight + "px";
+        renderer.view.style.width = canvasWidth + "px";
+        renderer.view.style.height = canvasHeight + "px";
 
-		// set the canvas width and height to fill the screen
-		//renderer.view.style.width = window.innerWidth + "px";
-		//renderer.view.style.height = window.innerHeight + "px";
-		renderer.view.style.display = "block";
+        // set the canvas width and height to fill the screen
+        //renderer.view.style.width = window.innerWidth + "px";
+        //renderer.view.style.height = window.innerHeight + "px";
+        renderer.view.style.display = "block";
 
-		// add render view to DOM
-		container.appendChild(renderer.view);
-	}
-	
-	var graphics = new PIXI.Graphics();
+        // add render view to DOM
+        container.appendChild(renderer.view);
+    }
+    
+    var graphics = new PIXI.Graphics();
 
-	function drawleds(frame) {
-		
-		var newframe = null;
-		
-		var numbytes = 0; 
-		if(typeof frame == 'object' && frame.constructor === Array) {
-			numbytes = frame.length;
-			newframe = frame;
-		} else {
-			numbytes = numitems*3;
-			newframe = Array(numbytes);
-			// init to default value
-			for(var i=0;i<numbytes;i++) {
-				newframe[i] = 128;
-			}
-		}
-		
-	    graphics.clear();
+    function drawleds(frame) {
+        
+        var newframe = null;
+        
+        var numbytes = 0; 
+        if(typeof frame == 'object' && frame.constructor === Array) {
+            numbytes = frame.length;
+            newframe = frame;
+        } else {
+            numbytes = numitems*3;
+            newframe = Array(numbytes);
+            // init to default value
+            for(var i=0;i<numbytes;i++) {
+                newframe[i] = 128;
+            }
+        }
+        
+        graphics.clear();
 
-	    for(var i=0;i<numitems;i++) {
-	        var rownum = Math.floor(i / numperrow);
-	        var topx = marginleft+(i % numperrow)*(rwidth+rmarginx);
-	        var topy = margintop+rownum*(margintop+rheight);
+        for(var i=0;i<numitems;i++) {
+            var rownum = Math.floor(i / numperrow);
+            var topx = marginleft+(i % numperrow)*(rwidth+rmarginx);
+            var topy = margintop+rownum*(margintop+rheight);
 
-	        graphics.lineStyle(1, 0x000000, 1);
+            graphics.lineStyle(1, 0x000000, 1);
 
-			var bufferOffset = i*3;
-			var color = (newframe[bufferOffset] << 16) | (newframe[bufferOffset+1] << 8) | (newframe[bufferOffset+2]);
-	        graphics.beginFill(color, 1);
-		    graphics.drawRect(topx, topy, rwidth, rheight);
-		    graphics.endFill();
-		}
-	}
-	
-	// initial drawing
-	initCanvas();
-	drawleds();
-	stage.addChild(graphics);
+            var bufferOffset = i*3;
+            var color = (newframe[bufferOffset] << 16) | (newframe[bufferOffset+1] << 8) | (newframe[bufferOffset+2]);
+            graphics.beginFill(color, 1);
+            graphics.drawRect(topx, topy, rwidth, rheight);
+            graphics.endFill();
+        }
+    }
+    
+    // initial drawing
+    initCanvas();
+    drawleds();
+    stage.addChild(graphics);
     renderer.render(stage);
 
-	led = {
-		latch: function(frame, numbytes, ial) {
-			drawleds(frame);
-			renderer.render(stage);
-		},
-		setsize: function(pnumitems, pnumperrow) {
-			console.log("setsize", pnumitems, pnumperrow);
-			numitems = pnumitems;
-			if(typeof pnumperrow == 'number') {
-				numperrow = pnumperrow;
-			}
-			initCanvas();
-		},
-		debug: function(a) {
-			// TODO - restore functionality
-			// var debugcontainer = $("<div>&nbsp;</div>")[0];
-			// $("#debugcontainer").append(debugcontainer);
-			// var debugstrip = LEDstrip(debugcontainer, numleds);
-			// for(var i=1;i<=numleds;i++) {
-			// 	var c = a.get(i);
-			// 	if(typeof c == 'undefined') {
-			// 		r = g = b = 0;
-			// 	} else {
-			// 		r = c.get(1);
-			// 		g = c.get(2);
-			// 		b = c.get(3);
-			// 	}
-			// 	debugstrip.pushrgb([r,g,b]);
-			// }
-			// debugstrip.latch();
-		}
-	}
+    led = {
+        latch: function(frame, numbytes, ial) {
+            drawleds(frame);
+            renderer.render(stage);
+        },
+        setsize: function(pnumitems, pnumperrow) {
+            console.log("setsize", pnumitems, pnumperrow);
+            numitems = pnumitems;
+            if(typeof pnumperrow == 'number') {
+                numperrow = pnumperrow;
+            }
+            initCanvas();
+        },
+        debug: function(a) {
+            // TODO - restore functionality
+            // var debugcontainer = $("<div>&nbsp;</div>")[0];
+            // $("#debugcontainer").append(debugcontainer);
+            // var debugstrip = LEDstrip(debugcontainer, numleds);
+            // for(var i=1;i<=numleds;i++) {
+            //  var c = a.get(i);
+            //  if(typeof c == 'undefined') {
+            //      r = g = b = 0;
+            //  } else {
+            //      r = c.get(1);
+            //      g = c.get(2);
+            //      b = c.get(3);
+            //  }
+            //  debugstrip.pushrgb([r,g,b]);
+            // }
+            // debugstrip.latch();
+        }
+    }
 
-	$('#diffuser').change(function(e) {
-		$('.ledstrip').toggleClass('diffuse');
-	});
+    $('#diffuser').change(function(e) {
+        $('.ledstrip').toggleClass('diffuse');
+    });
 
 });
 </script>
