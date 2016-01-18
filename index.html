@@ -81,7 +81,7 @@ $(document).ready(function(){
         for(var i=0;i<numitems;i++) {
             var rownum = Math.floor(i / numperrow);
             var topx = marginleft+(i % numperrow)*(rwidth+rmarginx);
-            var topy = margintop+rownum*(margintop+rheight);
+            var topy = margintop+rownum*(rmarginy+rheight);
 
             graphics.lineStyle(1, 0x000000, 1);
 
