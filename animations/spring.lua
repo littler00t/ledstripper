@@ -1,39 +1,40 @@
 led_count = 0
 function init_animation(_led_count)
     led_count = _led_count
+    num_dots = 4
     local max_initial_offset = math.floor(led_count/3)
     dots = {
         {
             ["color"] = string.char(0, 0, 255):rep(3),
             ["tension"] = 0.025,
             ["dampening"] = 0.04,
-            ["velocity"] = 1.5,
-            ["expected"] = math.floor(led_count/2),
-            ["height"] = math.floor(led_count/2) + math.random() * max_initial_offset
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1),
+            ["height"] = led_count / (num_dots+1)
         },
         {
             ["color"] = string.char(0, 255, 255):rep(3),
             ["tension"] = 0.015,
             ["dampening"] = 0.06,
-            ["velocity"] = -1.0,
-            ["expected"] = math.floor(led_count/4),
-            ["height"] = math.floor(led_count/4) + math.random() * max_initial_offset
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1)*2,
+            ["height"] = led_count / (num_dots+1)*2
         },
         {
             ["color"] = string.char(255, 0, 0):rep(3),
             ["tension"] = 0.003,
             ["dampening"] = 0.02,
-            ["velocity"] = 0.6,
-            ["expected"] = math.floor(led_count/4)*3,
-            ["height"] = math.floor(led_count/4)*3 + math.random() * max_initial_offset
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1)*3,
+            ["height"] = led_count / (num_dots+1)*3
         },
         {
             ["color"] = string.char(0, 255, 0):rep(3),
             ["tension"] = 0.025,
             ["dampening"] = 0.06,
-            ["velocity"] = -0.5,
-            ["expected"] = 10,
-            ["height"] = 10 + math.random() * max_initial_offset
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1)*4,
+            ["height"] = led_count / (num_dots+1)*4
         }
     }
 end
@@ -58,6 +59,20 @@ function springs()
         local acceleration = -dots[i]["tension"] * x - dots[i]["velocity"]*dots[i]["dampening"]
         dots[i]["height"] = dots[i]["height"] + dots[i]["velocity"]
         dots[i]["velocity"] = dots[i]["velocity"] + acceleration
+    end
+    
+    count_velocity_too_low = 0
+    for i = 1, #dots do
+        if math.abs(dots[i]["velocity"]) < 0.1 then
+            count_velocity_too_low = count_velocity_too_low + 1
+        end
+    end
+    
+    if count_velocity_too_low > (#dots/2) then
+        print("too low for " .. count_velocity_too_low .. " dots. Resetting")
+        for i = 1, #dots do
+            dots[i]["velocity"] = (4 * math.random())-2
+        end
     end
     
     sorted_dots = dots_by_height(dots)
