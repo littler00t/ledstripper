@@ -10,23 +10,23 @@ function init_animation(_led_count)
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.025,
-            ["dampening"] = 0.04,
+            ["dampening"] = 0.05,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1),
             ["height"] = led_count / (num_dots+1)
         },
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
-            ["tension"] = 0.015,
-            ["dampening"] = 0.06,
+            ["tension"] = 0.025,
+            ["dampening"] = 0.045,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*2,
             ["height"] = led_count / (num_dots+1)*2
         },
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
-            ["tension"] = 0.003,
-            ["dampening"] = 0.02,
+            ["tension"] = 0.025,
+            ["dampening"] = 0.042,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*3,
             ["height"] = led_count / (num_dots+1)*3
@@ -34,7 +34,7 @@ function init_animation(_led_count)
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.025,
-            ["dampening"] = 0.06,
+            ["dampening"] = 0.04,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*4,
             ["height"] = led_count / (num_dots+1)*4
@@ -42,15 +42,15 @@ function init_animation(_led_count)
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.025,
-            ["dampening"] = 0.04,
+            ["dampening"] = 0.038,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*5,
             ["height"] = led_count / (num_dots+1)*5
         },
         {
             ["color"] = colors[math.random(#colors)]:rep(3),
-            ["tension"] = 0.02,
-            ["dampening"] = 0.07,
+            ["tension"] = 0.025,
+            ["dampening"] = 0.034,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*6,
             ["height"] = led_count / (num_dots+1)*6
@@ -83,14 +83,17 @@ function springs()
     count_velocity_too_low = 0
     for i = 1, #dots do
         if math.abs(dots[i]["velocity"]) < 0.1 then
-            count_velocity_too_low = count_velocity_too_low + 1
+            dots[i]["velocity"] = (dots[i]["velocity"] * (math.random() + 1))
         end
     end
     
     if count_velocity_too_low > (#dots/2) then
         print("too low for " .. count_velocity_too_low .. " dots. Resetting")
         for i = 1, #dots do
-            dots[i]["velocity"] = (4 * math.random())-2
+            dots[i]["velocity"] = (dots[i]["velocity"] + 0.75))
+            if dots[i]["velocity"] > 2 then
+                dots[i]["velocity"] = 1 
+            end
         end
     end
     
