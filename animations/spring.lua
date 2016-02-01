@@ -14,12 +14,13 @@ function init_animation(_led_count)
             ["tension"] = 0.005 + 0.002*(i/2),
             ["dampening"] = 0.025,
             ["velocity"] = (4 * math.random())-2,
-            ["expected"] = led_count / (num_dots+1),
+            ["expected"] = led_count / (num_dots+2),
             ["height"] = 3
         })
     end
 end
 
+same_count = 0
 function springs()
     for i = 1, #dots do
         local x = dots[i]["height"] - dots[i]["expected"]
@@ -28,18 +29,19 @@ function springs()
         dots[i]["velocity"] = dots[i]["velocity"] + acceleration
     end
     
-    count_velocity_too_low = 0
-    for i = 1, #dots do
-        if math.abs(dots[i]["velocity"]) < 0.1 then
-            count_velocity_too_low = count_velocity_too_low + 1
-        end
-    end
     
-    if count_velocity_too_low > (#dots/2) then
-        print("too low for " .. count_velocity_too_low .. " dots. Resetting")
-        for i = 1, #dots do
+    if (dots[num_dots/2]["height"] - dots[num_dots/2]["expected"]) < 0.2 then
+        same_count = same_count + 1
+    else
+        same_count = 0
+    end
+
+    if same_count > 50 then
+        print "resetting"
+        for i=1, #dots do
             dots[i]["height"] = 3
         end
+        same_count = 0
     end
     
     buffer = ""
