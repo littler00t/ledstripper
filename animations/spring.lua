@@ -1,11 +1,14 @@
 led_count = 0
 function init_animation(_led_count)
     led_count = _led_count
-    num_dots = 4
+    num_dots = 6
     local max_initial_offset = math.floor(led_count/3)
+
+    colors = {string.char(0, 0, 255), string.char(255, 0, 0), string.char(0, 255, 0), string.char(0, 255, 255), string.char(255, 0, 255), string.char(255, 255, 0)}
+
     dots = {
         {
-            ["color"] = string.char(0, 0, 255):rep(3),
+            ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.025,
             ["dampening"] = 0.04,
             ["velocity"] = (4 * math.random())-2,
@@ -13,7 +16,7 @@ function init_animation(_led_count)
             ["height"] = led_count / (num_dots+1)
         },
         {
-            ["color"] = string.char(0, 255, 255):rep(3),
+            ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.015,
             ["dampening"] = 0.06,
             ["velocity"] = (4 * math.random())-2,
@@ -21,7 +24,7 @@ function init_animation(_led_count)
             ["height"] = led_count / (num_dots+1)*2
         },
         {
-            ["color"] = string.char(255, 0, 0):rep(3),
+            ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.003,
             ["dampening"] = 0.02,
             ["velocity"] = (4 * math.random())-2,
@@ -29,12 +32,28 @@ function init_animation(_led_count)
             ["height"] = led_count / (num_dots+1)*3
         },
         {
-            ["color"] = string.char(0, 255, 0):rep(3),
+            ["color"] = colors[math.random(#colors)]:rep(3),
             ["tension"] = 0.025,
             ["dampening"] = 0.06,
             ["velocity"] = (4 * math.random())-2,
             ["expected"] = led_count / (num_dots+1)*4,
             ["height"] = led_count / (num_dots+1)*4
+        },
+        {
+            ["color"] = colors[math.random(#colors)]:rep(3),
+            ["tension"] = 0.025,
+            ["dampening"] = 0.04,
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1)*5,
+            ["height"] = led_count / (num_dots+1)*5
+        },
+        {
+            ["color"] = colors[math.random(#colors)]:rep(3),
+            ["tension"] = 0.02,
+            ["dampening"] = 0.07,
+            ["velocity"] = (4 * math.random())-2,
+            ["expected"] = led_count / (num_dots+1)*6,
+            ["height"] = led_count / (num_dots+1)*6
         }
     }
 end
