@@ -1,7 +1,6 @@
 led_count = 0
 function init_animation(_led_count)
     led_count = _led_count
-    local max_initial_offset = math.floor(led_count/3)
     colors = { string.char(0, 0, 255):rep(3), string.char(255, 0, 255):rep(3), string.char(255, 0, 0):rep(3) }
     dots = {}
 end
@@ -21,8 +20,7 @@ end
 
 
 function fountain()
-    rand =  math.random()
-    if rand < 0.1 then
+    if math.random() < 0.1 then
         table.insert(dots, {
             ["color"] = colors[math.random(#colors)],
             ["height"] = 0,
@@ -32,12 +30,10 @@ function fountain()
     
     for i = 1, #dots do
         local current_dot = dots[i]
-        local tension = 0.01
-        local dampening = 0.2
-        local acceleration = -tension * current_dot["height"] - 3 - current_dot["velocity"] * dampening
+        local acceleration = -0.5
         current_dot["height"] = current_dot["height"] + current_dot["velocity"]
         current_dot["velocity"] = current_dot["velocity"] + acceleration
-        if current_dot["height"] < 0.2 then
+        if current_dot["height"] < 0 then
             table.remove(dots, i)
         end 
     end
