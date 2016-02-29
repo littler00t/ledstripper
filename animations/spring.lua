@@ -23,10 +23,11 @@ end
 same_count = 0
 function springs()
     for i = 1, #dots do
-        local x = dots[i]["height"] - dots[i]["expected"]
-        local acceleration = -dots[i]["tension"] * x - dots[i]["velocity"]*dots[i]["dampening"]
-        dots[i]["height"] = dots[i]["height"] + dots[i]["velocity"]
-        dots[i]["velocity"] = dots[i]["velocity"] + acceleration
+        local current_dot = dots[i];
+        local x = current_dot["height"] - current_dot["expected"];
+        local acceleration = -current_dot["tension"] * x - current_dot["velocity"]*dots[i]["dampening"];
+        current_dot["height"] = current_dot["height"] + current_dot["velocity"];
+        current_dot["velocity"] = current_dot["velocity"] + acceleration
     end
     
     
@@ -37,7 +38,6 @@ function springs()
     end
 
     if same_count > 50 then
-        print "resetting"
         for i=1, #dots do
             dots[i]["height"] = 3
         end
@@ -46,9 +46,9 @@ function springs()
     
     buffer = ""
     for i = 1, #dots do
-        local current_dot = dots[i]
+        local current_dot = dots[i];
         buffer = buffer .. string.char(0, 0, 0):rep(current_dot["height"])
-        buffer = buffer .. current_dot["color"]
+        buffer = buffer .. current_dot["color"];
     end
     buffer = buffer .. string.char(0, 0, 0):rep(led_count - buffer:len())
     return buffer

@@ -20,7 +20,7 @@ end
 
 
 function fountain()
-    if math.random() < 0.1 then
+    if math.random() < (1/10) then
         table.insert(dots, {
             ["color"] = colors[math.random(#colors)],
             ["height"] = 0,
@@ -29,9 +29,9 @@ function fountain()
     end
     
     for i = 1, #dots do
-        local current_dot = dots[i]
-        local acceleration = -0.5
-        current_dot["height"] = current_dot["height"] + current_dot["velocity"]
+        local current_dot = dots[i];
+        local acceleration = -(1/2)
+        current_dot["height"] = current_dot["height"] + current_dot["velocity"];
         current_dot["velocity"] = current_dot["velocity"] + acceleration
         if current_dot["height"] < 0 then
             table.remove(dots, i)
@@ -43,9 +43,9 @@ function fountain()
     end_of_last_dot = 0
     buffer = ""
     for i = 1, #dots do
-        local current_dot = sorted_dots[i]
+        local current_dot = sorted_dots[i];
         buffer = buffer .. string.char(0, 0, 0):rep(current_dot["height"] - end_of_last_dot)
-        buffer = buffer .. current_dot["color"]
+        buffer = buffer .. current_dot["color"];
         end_of_last_dot = current_dot["height"] + 9
     end
     buffer = buffer .. string.char(0, 0, 0):rep(led_count - (end_of_last_dot + 9))
