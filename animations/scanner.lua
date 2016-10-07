@@ -9,7 +9,7 @@ function init_animation(_led_count, _buffer)
     buffer = _buffer
     buffer:fill(0, 0, 0)
     
-    j = 0
+    j = 1
     for i = spread,1,-1 do
         r = math.floor(color[1] * ((spread + 1 - i) / (spread + 1)))
         g = math.floor(color[2] * ((spread + 1 - i) / (spread + 1)))
@@ -33,14 +33,14 @@ function scanner()
     if (position > led_count) then
         direction = -1
     end
-    
+
     if (position < 1) then
         direction = 1
     end
-    
-    buffer::shift(direction)
+
+    buffer:shift(direction)
 end
 
-function nextframe(offset)
+function frame(offset)
     scanner()
 end

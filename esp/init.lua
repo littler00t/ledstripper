@@ -3,16 +3,15 @@ local LED_PIN = 3
 local offset = 0
 local mqtt_topic = "/esp/1/"
 local mqtt_client = nil
+local buffer = nil
 
 function show_frame()
     offset = (offset + 1) % NUM_LEDS
-    ws2812.write(LED_PIN, frame(offset))
+    frame(offset)
+    ws2812.write(buffer)
 end
 
 function log(message)
-    if mqtt_client ~= nil then
-        mqtt_client:publish(mqtt_topic .. "log", message)
-    end
     print(message)
 end
 
@@ -20,7 +19,7 @@ function animate(animation)
     TIME_ALARM = 50
     if pcall(dofile, animation .. ".lua") then
         tmr.stop(2)
-        local status, err = pcall(init_animation, NUM_LEDS) 
+        local status, err = pcall(init_animation, NUM_LEDS, buffer) 
         if status then
             tmr.alarm(2, TIME_ALARM, 1, show_frame)
         else
@@ -99,7 +98,10 @@ function connect_wifi()
 end
 
 function setup_leds()
-    ws2812.write(LED_PIN, string.char(0, 0, 0):rep(NUM_LEDS))
+    ws2812.init()
+    buffer = ws2812.newBuffer(NUM_LEDS, 3)
+    buffer:fill(100, 100, 100)
+    ws2812.write(buffer)
 end
 
 connect_wifi()
