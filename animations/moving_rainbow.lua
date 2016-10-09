@@ -40,6 +40,6 @@ function ensure_within_bounds(value)
     return value
 end
 
-function frame()
+function frame(offset)
     buffer:shift(1, ws2812.SHIFT_CIRCULAR)
 end
