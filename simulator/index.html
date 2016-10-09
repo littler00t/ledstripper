@@ -81,7 +81,7 @@ $(document).ready(function(){
         for(var i=0;i<numitems;i++) {
             var rownum = Math.floor(i / numperrow);
             var topx = marginleft+(i % numperrow)*(rwidth+rmarginx);
-            var topy = margintop+rownum*(rmarginy+rheight);
+            var topy = margintop+rownum*(margintop+rheight);
 
             graphics.lineStyle(1, 0x000000, 1);
 
@@ -100,7 +100,7 @@ $(document).ready(function(){
     renderer.render(stage);
 
     led = {
-        latch: function(frame, numbytes, ial) {
+        latch: function(frame) {
             drawleds(frame);
             renderer.render(stage);
         },
@@ -135,6 +135,8 @@ $(document).ready(function(){
     $('#diffuser').change(function(e) {
         $('.ledstrip').toggleClass('diffuse');
     });
+    
+    
 
 });
 </script>
@@ -170,61 +172,53 @@ setframerate(60)
 -- define a function with the signature of 'frame' that returns frames (char sequence of byte color values)
 -- call the startled function passing in the frame function to start simulator. init_animation will get called then.
 
----- scanner example
-led_count = 0
-function init_animation(_led_count)
-    print("init animation called. num leds: " .. _led_count)
-    led_count = _led_count
-    color = {0,255,0}
+---- paste animation here
+--- example: scanner -- remove if you paste own animation
+function init_animation(_buffer)
+    color = {0, 255, 0}
     spread = 3
     direction = 1
-    position = 1
+    position = spread
     
-    dot = ""
-    for i = spread,1 do
+    buffer = _buffer
+    buffer:fill(0, 0, 0)
+    
+    j = 1
+    for i = spread,1,-1 do
         r = math.floor(color[1] * ((spread + 1 - i) / (spread + 1)))
         g = math.floor(color[2] * ((spread + 1 - i) / (spread + 1)))
         b = math.floor(color[3] * ((spread + 1 - i) / (spread + 1)))
-        dot = dot .. string.char(r, g, b)
+        buffer:set(j, r, g, b)
+        j = j+1
     end
-    dot = string.char(color[1], color[2], color[3])
+    buffer:set(j, color[1], color[2], color[3])
     for i = 1,spread do
         r = math.floor(color[1] * ((spread + 1 - i) / (spread + 1)))
         g = math.floor(color[2] * ((spread + 1 - i) / (spread + 1)))
         b = math.floor(color[3] * ((spread + 1 - i) / (spread + 1)))
-        dot = dot .. string.char(r, g, b)
+        buffer:set(j, r, g, b)
+        j = j+1
     end
-    dotwidth = (2 * spread) + 1
 end
 
 function scanner()
-    startofdot = position - spread
-    buffer = string.char(0, 0, 0):rep(startofdot)
-    
     position = position + direction;
-    
-    if (position > led_count) then
-        position = position - 2
+
+    if (position > (buffer:size() - spread)) then
         direction = -1
     end
-    
-    if (position < 1) then
-        position = position + 2
+
+    if (position < (1 + spread)) then
         direction = 1
     end
-    
-    buffer = buffer .. dot
-    
-    buffer = buffer .. string.char(0, 0, 0):rep(led_count - (startofdot + dotwidth))
-    return buffer
-end
----- end of scanner example
 
--- frame function gets called with frameCounter 
-function frame(frameCounter)
-    -- print("frame #" .. frameCounter)
-    return scanner()
+    buffer:shift(direction)
 end
+
+function frame(offset)
+    scanner()
+end
+---- end example
 
 -- start the animation
 startled(frame)
@@ -238,18 +232,95 @@ startled(frame)
     </article>
 
 <script type="text/lua">
+
+ws2812 = {}
+ws2812.SHIFT_CIRCULAR = 1
+ws2812.SHIFT_LOGICAL = 2
+
+Buffer = {}
+Buffer.__index = Buffer
+
+function Buffer.newBuffer(numberOfLeds, bytesPerLed)
+   local buf = {}             -- our new object
+   setmetatable(buf,Buffer)  -- make Account handle lookup
+      
+   buf.numberOfLeds = numberOfLeds
+   buf.bytesPerLed = 3
+   buf.bufferSize = buf.numberOfLeds*buf.bytesPerLed
+   buf.buffer = {n=buf.bufferSize}
+   for i = 1, buf.bufferSize do
+     buf.buffer[i] = 0
+   end
+   
+   return buf
+end
+
+function Buffer:get(index)
+ print("get TODO")
+end
+
+function Buffer:set(index, g, r, b)
+  if(index>self.numberOfLeds) then
+    print("index too high", index)
+  end
+  if(index<1) then
+    print("index too low", index)
+  end
+  local offset = (index-1)*self.bytesPerLed
+  self.buffer[offset+1] = r
+  self.buffer[offset+2] = g
+  self.buffer[offset+3] = b
+end
+-- test code
+--local buffer = Buffer.newBuffer(10,10)
+--buffer:set(1, 255, 0, 0)
+--buffer:set(1, {0, 0, 0, 255})
+--buffer:set(1, string.char(255, 0, 0))
+
+function Buffer:size()
+  return self.numberOfLeds
+end
+
+function Buffer:fill(r, g, b)
+  local n = self:size()
+  for i=1, n do
+    self:set(i, r, g, b)
+  end
+end
+
+-- SHIFT CIRCULAR
+function Buffer:shift(value, mode)
+  if value==nil then
+    value = 1
+  end
+  -- if negative then take from left side
+  local numtotake = math.abs(value)*3
+  for i=1, numtotake do
+    local takenout = 0
+    if value<0 then
+        -- remove first element
+        takenout = table.remove(self.buffer, 1)
+    else
+        -- remove last element
+        takenout = table.remove(self.buffer)
+    end
+    if mode==ws2812.SHIFT_LOGICAL then
+        takenout = 0
+    end
+    if value<0 then
+        -- remove first element --> insert at end
+        table.insert(self.buffer, takenout)
+    else
+        -- remove last element --> insert at beginning
+        table.insert(self.buffer, 1, takenout)
+    end
+  end
+end
+
     -- frame rate (fps)
     framerate = 60
     function pushled (a)
-        actualnumbytes = string.len(a)
-        intarray = {n=actualnumbytes}
-        for i=1, actualnumbytes do
-            intarray[i] = string.byte(a, i)
-            --print("i" .. "i" .. ", a:" .. string.byte(a, i) .. ", intarray:" .. intarray[i])
-        end
-        intarraylen = #intarray
-        js.global.led:latch(js.global:Array(table.unpack(intarray)), actualnumbytes, intarraylen)
-        -- print("frame #" .. pushledFrameCount .. ", bytes:" .. actualnumbytes)
+        js.global.led:latch(js.global:Array(table.unpack(globalbuffer.buffer)))
         pushledFrameCount = pushledFrameCount + 1
     end
     function bytestostring(bytes)
@@ -272,8 +343,9 @@ startled(frame)
         pushledFrameCount = 0
         delay = 1000/framerate
         stopled()
-        init_animation(getstripsize())
-        js.global.led.interval = window:setInterval(function() pushled(framegen(pushledFrameCount)) end, delay)
+        globalbuffer = Buffer.newBuffer(numleds, 3)
+        init_animation(globalbuffer)
+        js.global.led.interval = window:setInterval(function() pushled(framegen()) end, delay)
     end
     function setstripsize(pnumleds, pbreakat)
         numleds = pnumleds
