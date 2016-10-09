@@ -236,6 +236,8 @@ startled(frame)
 ws2812 = {}
 ws2812.SHIFT_CIRCULAR = 1
 ws2812.SHIFT_LOGICAL = 2
+ws2812.FADE_IN = 1
+ws2812.FADE_OUT = 2
 
 Buffer = {}
 Buffer.__index = Buffer
@@ -285,6 +287,17 @@ end
 
 function Buffer:size()
   return self.numberOfLeds
+end
+
+function Buffer:fade(v, inourout)
+  for i=1, #self.buffer do
+    local newval = 0
+    if inorout==ws2812.FADE_IN then
+      self.buffer[i] = math.max(255, self.buffer[i] * v)
+    else
+      self.buffer[i] = self.buffer[i] / v
+    end
+  end
 end
 
 function Buffer:fill(r, g, b)
