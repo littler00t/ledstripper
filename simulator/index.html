@@ -266,6 +266,12 @@ function Buffer:set(index, g, r, b)
   if(index<1) then
     print("index too low", index)
   end
+  if (type(g) == "table") then
+    local ng = g[1]
+    r = g[2]
+    b = g[3]
+    g = ng
+  end
   local offset = (index-1)*self.bytesPerLed
   self.buffer[offset+1] = r
   self.buffer[offset+2] = g
