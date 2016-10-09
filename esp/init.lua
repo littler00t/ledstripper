@@ -19,7 +19,7 @@ function animate(animation)
     TIME_ALARM = 50
     if pcall(dofile, animation .. ".lua") then
         tmr.stop(2)
-        local status, err = pcall(init_animation, NUM_LEDS, buffer) 
+        local status, err = pcall(init_animation, buffer) 
         if status then
             tmr.alarm(2, TIME_ALARM, 1, show_frame)
         else
@@ -100,7 +100,7 @@ end
 function setup_leds()
     ws2812.init()
     buffer = ws2812.newBuffer(NUM_LEDS, 3)
-    buffer:fill(100, 100, 100)
+    buffer:fill(0, 0, 0)
     ws2812.write(buffer)
 end
 

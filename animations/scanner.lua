@@ -1,6 +1,4 @@
-led_count = 0
-function init_animation(_led_count, _buffer)
-    led_count = _led_count
+function init_animation(_buffer)
     color = {0, 255, 0}
     spread = 3
     direction = 1
@@ -30,11 +28,11 @@ end
 function scanner()
     position = position + direction;
 
-    if (position > led_count) then
+    if (position > (buffer:size() - spread)) then
         direction = -1
     end
 
-    if (position < 1) then
+    if (position < (1 + spread)) then
         direction = 1
     end
 
