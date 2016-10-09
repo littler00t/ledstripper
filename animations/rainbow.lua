@@ -12,7 +12,7 @@ function ensure_within_bounds(value)
     return value
 end
 
-function frame(offset)
+function frame()
     if (current_r == 255 and current_g == 0 and current_b < 255) then
         buffer:fill(current_r, current_g, current_b)
         current_b = current_b + stepsize

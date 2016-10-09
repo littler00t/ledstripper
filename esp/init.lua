@@ -1,13 +1,11 @@
 local NUM_LEDS = 147
 local LED_PIN = 3
-local offset = 0
 local mqtt_topic = "/esp/1/"
 local mqtt_client = nil
 local buffer = nil
 
 function show_frame()
-    offset = (offset + 1) % NUM_LEDS
-    frame(offset)
+    frame()
     ws2812.write(buffer)
 end
 
