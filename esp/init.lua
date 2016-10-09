@@ -10,7 +10,7 @@ function show_frame()
 end
 
 function log(message)
-    if mqtt_client != nil then
+    if mqtt_client ~= nil then
         mqtt_client:publish(mqtt_topic .. "log", message)
     end
     print(message)
@@ -52,12 +52,12 @@ function setup_mqtt()
     mqtt_client:lwt("/esp/1/state", "offline", 0, 0)
 
     mqtt_client:on("connect", function(m)
-        mqtt_client:publish( topic .. "state", "online")
-        mqtt_client:publish( topic .. "num_lights", NUM_LEDS)
-        mqtt_client:publish( topic .. "ip_address", wifi.sta.getip())
-        mqtt_client:subscribe( topic .. "command")
-        mqtt_client:subscribe( topic .. "num_lights")
-        mqtt_client:subscribe( topic .. "animations")
+        mqtt_client:publish( topic .. "state", "online", 0, 0)
+        mqtt_client:publish( topic .. "num_lights", NUM_LEDS, 0, 0)
+        mqtt_client:publish( topic .. "ip_address", wifi.sta.getip(), 0, 0)
+        mqtt_client:subscribe( topic .. "command", 0)
+        mqtt_client:subscribe( topic .. "num_lights", 0)
+        mqtt_client:subscribe( topic .. "animations", 0)
     end)
 
     mqtt_client:on("message", function(conn, current_topic, data)
@@ -80,20 +80,20 @@ function setup_mqtt()
     mqtt_client:connect("house", 1883, 0)
 end
 
-function connect_wifi() 
-    if not wifi.sta.getip() == nil then
+function connect_wifi()
+    if wifi.sta.getip() == nil then
         wifi.setmode(wifi.STATION)
-        require(wifipassword)
+        require("wifipassword")
         wifi.sta.config("Bob", get_wifi_password())
     end
 
-    tmr.alarm(1, 1000, 1, function() 
-        if wifi.sta.getip()== nil then 
+    tmr.alarm(1, 2000, 1, function() 
+        if wifi.sta.getip() == nil then 
             print("IP unavailable, Waiting...") 
         else
             tmr.stop(1)
             setup_mqtt()
-            log("Config done, IP is " .. wifi.sta.getip())
+            print("Config done, IP is " .. wifi.sta.getip())
         end
     end)
 end
