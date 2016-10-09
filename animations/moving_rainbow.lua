@@ -7,27 +7,27 @@ function init_animation(_buffer)
 
     for i=1,buffer:size() do
         if (current_r == 255 and current_g == 0 and current_b < 255) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_b = current_b + stepsize
             current_b = ensure_within_bounds(current_b)
         elseif (current_r > 0 and current_g == 0 and current_b == 255) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_r = current_r - stepsize
             current_r = ensure_within_bounds(current_r)
         elseif (current_r == 0 and current_g < 255 and current_b == 255) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_g = current_g + stepsize
             current_g = ensure_within_bounds(current_g)
         elseif (current_r == 0 and current_g == 255 and current_b > 0) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_b = current_b - stepsize
             current_b = ensure_within_bounds(current_b)
         elseif (current_r < 255 and current_g == 255 and current_b == 0) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_r = current_r + stepsize
             current_r = ensure_within_bounds(current_r)
         elseif (current_r == 255 and current_g > 0 and current_b == 0) then
-            buffer:set(i, current_r, current_g, current_b)
+            buffer:set(i, current_g, current_r, current_b)
             current_g = current_g - stepsize
             current_g = ensure_within_bounds(current_g)
         end

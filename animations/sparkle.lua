@@ -1,6 +1,6 @@
 function init_animation(_buffer)
     buffer = _buffer
-    colors = {{255, 255, 255}, {0, 0, 255}, {86, 170, 255}, {17, 179, 255}}
+    colors = {{255, 255, 255}, {0, 0, 255}, {170, 86, 255}, {179, 17, 255}}
     buffer:fill(0, 0, 0)
     counter = 0
 end
