@@ -1,13 +1,12 @@
 local NUM_LEDS = 150
 local LED_PIN = 3
-local offset = 0
+local TIME_ALARM = 50
 local mqtt_topic = "/esp/1/"
 local mqtt_client = nil
 local buffer = nil
 
 function show_frame()
-    offset = (offset + 1) % NUM_LEDS
-    frame(offset)
+    frame()
     ws2812.write(buffer)
 end
 
@@ -15,13 +14,17 @@ function log(message)
     print(message)
 end
 
+function trigger_frames()
+    tmr.stop(2)
+    tmr.alarm(2, TIME_ALARM, 1, show_frame)
+end
+
 function animate(animation)
-    TIME_ALARM = 50
     if pcall(dofile, animation .. ".lua") then
         tmr.stop(2)
         local status, err = pcall(init_animation, buffer) 
         if status then
-            tmr.alarm(2, TIME_ALARM, 1, show_frame)
+            trigger_frames()
         else
             log("Init of animation " .. animation .. " failed: " .. err)
         end
@@ -57,6 +60,7 @@ function setup_mqtt()
         mqtt_client:subscribe( topic .. "command", 0)
         mqtt_client:subscribe( topic .. "num_lights", 0)
         mqtt_client:subscribe( topic .. "animations", 0)
+        mqtt_client:subscribe( topic .. "speed", 0)
     end)
 
     mqtt_client:on("message", function(conn, current_topic, data)
@@ -67,6 +71,10 @@ function setup_mqtt()
                 animate(data)
             elseif current_topic == (topic .. "num_lights") then
                 NUM_LEDS = tonumber(data)
+                trigger_frames()
+            elseif current_topic == (topic .. "speed") then
+                TIME_ALARM = tonumber(data)
+                trigger_frames()
             elseif current_topic == (topic .. "animations") then
                 local status, err = pcall(store_file, data)
                 if not status then

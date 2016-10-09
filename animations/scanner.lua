@@ -25,7 +25,7 @@ function init_animation(_buffer)
     end
 end
 
-function frame(offset)
+function scanner()
     position = position + direction;
 
     if (position > (buffer:size() - spread)) then
@@ -37,4 +37,8 @@ function frame(offset)
     end
 
     buffer:shift(direction)
+end
+
+function frame(offset)
+    scanner()
 end
