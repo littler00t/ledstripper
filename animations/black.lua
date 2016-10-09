@@ -1,14 +1,7 @@
-led_count = 0
-function init_animation(_led_count)
-    led_count = _led_count
-    
-    allblack = string.char(0, 0, 0):rep(led_count)
-end
-
-function black()
-    return allblack
+function init_animation(_buffer)
+    buffer = _buffer
+    buffer:fill(0, 0, 0)
 end
 
 function frame(offset)
-    return black()
 end

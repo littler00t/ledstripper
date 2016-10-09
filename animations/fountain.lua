@@ -52,6 +52,6 @@ function fountain()
     return buffer
 end
 
-function frame(offset)
+function frame()
     return fountain()
 end

@@ -54,6 +54,6 @@ function springs()
     return buffer
 end
 
-function frame(offset)
+function frame()
     return springs()
 end
