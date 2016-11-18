@@ -1,5 +1,4 @@
 local NUM_LEDS = 150
-local LED_PIN = 3
 local TIME_ALARM = 50
 local mqtt_topic = "/esp/1/"
 local mqtt_client = nil
