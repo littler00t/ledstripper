@@ -5,9 +5,10 @@ local mqtt_client = nil
 local buffer = nil
 local brightness_buffer = nil
 local brightness = 1
+local options = {}
 
 function show_frame()
-    frame()
+    frame(options)
     adjust_brightness()
     ws2812.write(brightness_buffer)
 end
@@ -74,6 +75,7 @@ function setup_mqtt()
         mqtt_client:subscribe( topic .. "animations", 0)
         mqtt_client:subscribe( topic .. "speed", 0)
         mqtt_client:subscribe( topic .. "brightness", 0)
+        mqtt_client:subscribe( topic .. "options", 0)
     end)
 
     mqtt_client:on("message", function(conn, current_topic, data)
@@ -95,6 +97,15 @@ function setup_mqtt()
                 end
             elseif current_topic == (topic .. "brightness") then
                 brightness = tonumber(data) / 100
+            elseif current_topic == (topic .. "options") then
+                log("Got option:" .. data)
+                indexOfEquals = data:find("=")
+                if indexOfEquals ~= nil then
+                    key = data:sub(1, indexOfEquals - 1)
+                    value = data:sub(indexOfEquals + 1)
+                    options[key] = value
+                    log("Found value '" .. value .. "' for key '" .. key .. "'")
+                end
             end
         end
     end)
