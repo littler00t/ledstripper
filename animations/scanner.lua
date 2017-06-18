@@ -39,6 +39,6 @@ function scanner()
     buffer:shift(direction)
 end
 
-function frame(offset)
+function frame()
     scanner()
 end

@@ -6,6 +6,7 @@ function init_animation(_buffer)
 end
 
 function frame()
+    if counter > 100 then counter = 0 end
     counter = counter + 1
     if (counter % 2 == 0) then
         buffer:fade(2)
