@@ -6,6 +6,7 @@ FASTLED_USING_NAMESPACE
 #include "config.h"
 #include "animation.hpp"
 #include "rainbow.hpp"
+#include "movingrainbow.hpp"
 #include "white.hpp"
 
 CRGB leds[NUM_LEDS];
@@ -121,17 +122,16 @@ void initMqtt()
     connectMqtt();
 }
 
-Animation* animations[2];
+static const uint8_t animationCount = 3;
+Animation* animations[animationCount];
 Animation* currentAnimation = nullptr;
-uint8_t animationCount = 0;
 
 void initAnimations()
 {
     animations[0] = new Rainbow(leds, NUM_LEDS);
     animations[1] = new White(leds, NUM_LEDS);
+    animations[2] = new MovingRainbow(leds, NUM_LEDS, 1, NUM_LEDS);
     currentAnimation = animations[0];
-
-    animationCount = sizeof(animations)/sizeof(animations[0]);
 }
 
 void switchToAnimation(const char* animation)
