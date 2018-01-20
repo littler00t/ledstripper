@@ -30,7 +30,7 @@ void initLEDs()
     FastLED.setCorrection(TypicalLEDStrip);
     setBrightness(255);
     FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
-    fill_solid(leds, NUM_LEDS, CRGB::Black);  
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
     FastLED.show();
 }
 
@@ -138,6 +138,9 @@ void initAnimations()
 
 void switchToAnimation(const char* animation)
 {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    FastLED.show();
+
     for(size_t i = 0; i < animationCount; ++i)
     {
         if (!strcmp(animations[i]->getName(), animation))
