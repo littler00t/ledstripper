@@ -7,10 +7,16 @@ FASTLED_USING_NAMESPACE
 
 CRGB leds[NUM_LEDS];
 byte brightness = 255;
+unsigned long int delayTime = 100;
 
 void setBrightness(byte brightness) {
       Serial.printf("Setting brightness %i\n", brightness);
       FastLED.setBrightness(brightness);
+}
+
+void setDelay(unsigned long int _delay) {
+      Serial.printf("Setting delay %i\n", _delay);
+      delayTime = _delay;
 }
 
 void initLEDs()
@@ -58,14 +64,18 @@ void messageReceived(char* topic, unsigned char* payload, unsigned int length)
     Serial.printf("Received message on topic '%s': '%s'\n", topic, message);
 
     if(isTopic(topic, "brightness")) {
-      int value = atoi((char*)message) * 255 / 100;;
-      Serial.printf("Setting brightness (value3) %i\n", value);
+      int value = atoi((char*)message) * 255 / 100;
        if(value >= 0 && value <= 255) {
           setBrightness(value);
        }
     }
 
-    //TODO: check topic & handle message
+    if(isTopic(topic, "speed")) {
+      int value = atoi((char*)message);
+       if(value >= 0 && value <= 2000) {
+          setDelay(value);
+       }
+    }
 }
 
 void connectMqtt() {
@@ -115,5 +125,5 @@ void loop()
     connectMqtt();
     client.loop();
     FastLED.show();
-    delay(500);
+    delay(delayTime);
 }
