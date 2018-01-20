@@ -11,12 +11,28 @@ FASTLED_USING_NAMESPACE
 #include "sparkle.hpp"
 
 CRGB leds[NUM_LEDS];
+CRGB color = CRGB::White;
 byte brightness = 255;
 unsigned long int delayTime = 100;
 
 void setBrightness(byte brightness) {
       Serial.printf("Setting brightness %i\n", brightness);
       FastLED.setBrightness(brightness);
+}
+
+void setColor(char* message) {
+
+      char* ptr_r = strtok(message, ",");
+      char* ptr_g = strtok(nullptr, ",");
+      char* ptr_b = strtok(nullptr, ",");
+      Serial.printf("Setting color %s\n", message);
+      Serial.printf("Pos R %s\n", ptr_r);
+      Serial.printf("Pos G %s\n", ptr_g);
+      Serial.printf("Pos G %s\n", ptr_b);
+      uint8_t r = (uint8_t)atoi(ptr_r);
+      uint8_t g = (uint8_t)atoi(ptr_g);
+      uint8_t b = (uint8_t)atoi(ptr_b);
+      color.setRGB(r, g, b);
 }
 
 void setDelay(unsigned long int _delay) {
@@ -84,6 +100,10 @@ void messageReceived(char* topic, unsigned char* payload, unsigned int length)
             setDelay(value);
         }
     }
+    else if (isTopic(topic, "color"))
+    {
+        setColor(message);
+    }
     else if (isTopic(topic, "command"))
     {
         switchToAnimation(message);
@@ -101,9 +121,15 @@ void connectMqtt() {
             strncpy(topic + strlen(MQTT_BASE_TOPIC), "command", 255);
             client.subscribe(topic);
             Serial.printf("Subscribed to '%s'\n", topic);
+
+            strncpy(topic + strlen(MQTT_BASE_TOPIC), "color", 255);
+            client.subscribe(topic);
+            Serial.printf("Subscribed to '%s'\n", topic);
+            
             strncpy(topic + strlen(MQTT_BASE_TOPIC), "brightness", 255);
             client.subscribe(topic);
             Serial.printf("Subscribed to '%s'\n", topic);
+
             strncpy(topic + strlen(MQTT_BASE_TOPIC), "speed", 255);
             client.subscribe(topic);
             Serial.printf("Subscribed to '%s'\n", topic);
