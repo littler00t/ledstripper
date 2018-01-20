@@ -4,6 +4,9 @@ FASTLED_USING_NAMESPACE
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
+#include "animation.hpp"
+#include "rainbow.hpp"
+#include "white.hpp"
 
 CRGB leds[NUM_LEDS];
 byte brightness = 255;
@@ -64,8 +67,10 @@ void messageReceived(char* topic, unsigned char* payload, unsigned int length)
           setBrightness(value);
        }
     }
-
-    //TODO: check topic & handle message
+    else if(isTopic(topic, "command"))
+    {
+        switchToAnimation(message);
+    }
 }
 
 void connectMqtt() {
@@ -101,6 +106,30 @@ void initMqtt()
     connectMqtt();
 }
 
+Animation* animations[2];
+Animation* currentAnimation = nullptr;
+uint8_t animationCount = 0;
+
+void initAnimations()
+{
+    animations[0] = new Rainbow(leds, NUM_LEDS);
+    animations[1] = new White(leds, NUM_LEDS);
+    currentAnimation = animations[0];
+
+    animationCount = sizeof(animations)/sizeof(animations[0]);
+}
+
+void switchToAnimation(const char* animation)
+{
+    for(size_t i = 0; i < animationCount; ++i)
+    {
+        if (!strcmp(animations[i]->getName(), animation))
+        {
+            currentAnimation = animations[i];
+        }
+    }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -108,12 +137,16 @@ void setup()
     initLEDs();
     initWifi();
     initMqtt();
+    initAnimations();
 }
 
 void loop()
 {
-    connectMqtt();
-    client.loop();
+    EVERY_N_MILLISECONDS(50)
+    {
+        connectMqtt();
+        client.loop();
+        currentAnimation->drawFrame();
+    }
     FastLED.show();
-    delay(500);
 }
