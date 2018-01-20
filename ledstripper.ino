@@ -6,12 +6,18 @@ FASTLED_USING_NAMESPACE
 #include "config.h"
 
 CRGB leds[NUM_LEDS];
+byte brightness = 255;
+
+void setBrightness(byte brightness) {
+      Serial.printf("Setting brightness %i\n", brightness);
+      FastLED.setBrightness(brightness);
+}
 
 void initLEDs()
 {
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     FastLED.setCorrection(TypicalLEDStrip);
-    FastLED.setBrightness(255);
+    setBrightness(255);
     FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
     fill_solid(leds, NUM_LEDS, CRGB::Black);  
     FastLED.show();
@@ -39,6 +45,10 @@ void initWifi()
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+bool isTopic(char* topic, char* expectedTopic) {
+    return !strcmp(topic + strlen(MQTT_BASE_TOPIC), expectedTopic);
+}
+
 void messageReceived(char* topic, unsigned char* payload, unsigned int length)
 {
     char message[length + 1];
@@ -46,6 +56,14 @@ void messageReceived(char* topic, unsigned char* payload, unsigned int length)
     message[length] = '\0';
 
     Serial.printf("Received message on topic '%s': '%s'\n", topic, message);
+
+    if(isTopic(topic, "brightness")) {
+      int value = atoi((char*)message) * 255 / 100;;
+      Serial.printf("Setting brightness (value3) %i\n", value);
+       if(value >= 0 && value <= 255) {
+          setBrightness(value);
+       }
+    }
 
     //TODO: check topic & handle message
 }
