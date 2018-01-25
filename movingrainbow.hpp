@@ -6,27 +6,18 @@
 class MovingRainbow: public Animation
 {
 public:
-    MovingRainbow(CRGB* leds, size_t ledCount, size_t height, size_t width);
+    MovingRainbow(CRGB* leds, size_t ledCount);
     virtual void drawFrame();
     virtual const char* getName()
     {
-        return "movingrainbow";
+        return "moving_rainbow";
     }
     
 private:
     CRGB* leds;
     size_t ledCount;
-    CRGB color;
-    int stepsize;
-    size_t height;
-    size_t width;
-    CRGB* fullRainbow;
-    size_t rainbowSize;
-    size_t currentSliceStartIndex;
-    CRGB* currentRainbowSlice;
-
-    uint8_t ensureWithinBounds(int value);
-    CRGB* calculateRainbow();
+    uint8_t baseColor;
+    uint8_t frameCounter;
 };
 
 #endif

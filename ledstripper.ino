@@ -159,7 +159,7 @@ void initAnimations()
 {
     animations[0] = new Black(leds, NUM_LEDS);
     animations[1] = new White(leds, NUM_LEDS);
-    animations[2] = new MovingRainbow(leds, NUM_LEDS, 1, NUM_LEDS);
+    animations[2] = new MovingRainbow(leds, NUM_LEDS);
     animations[3] = new Sparkle(leds, NUM_LEDS, color);
     animations[4] = new Color(leds, NUM_LEDS, color);
     animations[5] = new Rainbow(leds, NUM_LEDS);
@@ -198,6 +198,6 @@ void loop()
     {
         currentAnimation->drawFrame();
     }
-    frameTimer.setPeriod( delayTime );
+    frameTimer.setPeriod(delayTime);
     FastLED.show();
 }
